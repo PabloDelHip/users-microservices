@@ -35,7 +35,7 @@ jobs:
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
-        KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        KEY: ${{ secrets.EC2_SSH_KEY }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
