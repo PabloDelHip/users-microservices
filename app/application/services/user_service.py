@@ -1,5 +1,5 @@
 from app.domain.ports.user_repository import UserRepository
-from app.domain.entities.user import User
+from app.domain.entities.user import User, UserCreate
 
 class UserService:
   def __init__(self, user_repository: UserRepository):
@@ -14,8 +14,8 @@ class UserService:
   def get_all(self, tenant_id: int) -> list[User]:
     return self.user_repository.get_all(tenant_id)
 
-  def save(self, user: User) -> User:
-    return self.user_repository.get_all(user)
+  def save(self, user: UserCreate) -> User:
+    return self.user_repository.save(user)
 
   def update(self, user_id: int, user: User) -> User:
     return self.user_repository.update(user_id, user)

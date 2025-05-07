@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from app.domain.entities.user import User
+from app.domain.entities.user import User, UserCreate
 
 class UserRepository(ABC):
 
@@ -17,7 +17,7 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    def save(self, user: User) -> User:
+    def save(self, user: UserCreate) -> User:
         pass
 
     @abstractmethod

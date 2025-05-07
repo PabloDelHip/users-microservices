@@ -3,7 +3,7 @@ from app.infrastructure.repositories.database.models.user_model import UserModel
 from app.domain.value_objects.users.name_user import NameUser
 from app.domain.value_objects.users.email_user import EmailUser
 from app.domain.ports.user_repository import UserRepository
-from app.domain.entities.user import User
+from app.domain.entities.user import User, UserCreate
 from typing import Optional, List
 
 class UserRepositoryImpl(UserRepository):
@@ -31,8 +31,9 @@ class UserRepositoryImpl(UserRepository):
     ]
 
   
-  def save(self, user: User) -> User:
-    pass
+  def save(self, user: UserCreate) -> User:
+    # Lógica real: insertar en DB, aquí retorno de prueba
+    return User(id=123, name=user.name, email=user.email)
 
   
   def update(self, user_id: int, user: User) -> Optional[User]:

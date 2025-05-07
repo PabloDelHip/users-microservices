@@ -1,11 +1,11 @@
-name: Deploy to AWS ECR
+name: Deploy to AWS ECR and EC2
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,11 +23,6 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Manual ECR login (debug)
-      run: |
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
-        | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-
     - name: Build, tag, and push image to ECR
       env:
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -35,3 +30,27 @@ jobs:
       run: |
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Deploy to EC2 via SSH
+      env:
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
+        KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        echo "$KEY" > key.pem
+        chmod 400 key.pem
+
+        ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST <<EOF
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+          docker pull $ECR_REPOSITORY:$IMAGE_TAG
+
+          docker stop myapp || true
+          docker rm myapp || true
+
+          docker run -d --name myapp -p 80:3000 $ECR_REPOSITORY:$IMAGE_TAG
+        EOF
+
+        rm -f key.pem

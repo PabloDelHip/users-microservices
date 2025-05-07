@@ -7,7 +7,18 @@ from app.domain.value_objects.users.tenant_id_user import TenantIdeUser
 
 class User(BaseModel):
     id: int = Field(..., description="Id del producto")
-    # tenant_id: TenantIdeUser
+    tenant_id: TenantIdeUser
+    name: NameUser
+    email: EmailUser
+    password: str
+    # type: UserType
+    # status: bool
+    # created_at: datetime
+    # updated_at: datetime
+
+class UserCreate(BaseModel):
+    id: int = Field(..., description="Id del producto")
+    tenant_id: TenantIdeUser
     name: NameUser
     email: EmailUser
     password: str
